@@ -26,7 +26,7 @@ services:
       - BASE_URL=https://${SERVICE_NAME}.${MY_DOMAIN}
       # Respect proxy_pass type settings, `proxy_set_header Host "localhost";` and `proxy_set_header X-Forwarded-Prefix /app;`
       # More here https://github.com/dgtlmoon/changedetection.io/wiki/Running-changedetection.io-behind-a-reverse-proxy-sub-directory
-      - USE_X_SETTINGS=1
+      # - USE_X_SETTINGS=1
       - HIDE_REFERER=true
       - FETCH_WORKERS=10
       # Absolute minimum seconds to recheck, overrides any watch minimum, change to 0 to disable
@@ -34,6 +34,8 @@ services:
     # ports:
       # - 5000:5000
     restart: unless-stopped
+    dns:
+      - '${DNS_SERVER}'
     networks:
       changedetection:
       proxy:
