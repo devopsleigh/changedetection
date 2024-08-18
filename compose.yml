@@ -1,18 +1,18 @@
 services:
+
   changedetection:
     image: ghcr.io/dgtlmoon/changedetection.io
-    container_name: changedetection
-    hostname: changedetection
+    container_name: ${SERVICE_NAME}
+    hostname: ${SERVICE_NAME}
     depends_on:
-      playwright-chrome:
-        condition: service_started
+      - playwright-chrome
     volumes:
       - ./data:/datastore
-      - ./proxies.json:/datastore/proxies.json
+      # - ./proxies.json:/datastore/proxies.json
     environment:
       - PORT=5000
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID}
+      - PGID=${PGID}
       # Log output levels: TRACE, DEBUG(default), INFO, SUCCESS, WARNING, ERROR, CRITICAL
       # - LOGGER_LEVEL=DEBUG
       # Alternative Playwright URL, do not use "'s or 's!
@@ -29,9 +29,15 @@ services:
     dns:
       - ${DNS_SERVER}
     networks:
-      changedetection:
-      proxy:
+      - default
+      - proxy
+      - external
     labels:
+      - "homepage.name=Change Detection"
+      - "homepage.description=Detect changes in websites"
+      - "homepage.icon=mdi-delta"
+      - "homepage.href=https://${SERVICE_NAME}.${MY_DOMAIN}"
+      - "homepage.group=Monitoring"
       - "traefik.enable=true"
       - "traefik.http.routers.${SERVICE_NAME}.entrypoints=http"
       - "traefik.http.routers.${SERVICE_NAME}.rule=Host(`${SERVICE_NAME}.${MY_DOMAIN}`)"
@@ -59,9 +65,11 @@ services:
       - SCREEN_DEPTH=16
       - MAX_CONCURRENT_CHROME_PROCESSES=10
     networks:
-      changedetection:
+      - default
+      - external
 
 networks:
-  changedetection:
   proxy:
+    external: true
+  external:
     external: true
